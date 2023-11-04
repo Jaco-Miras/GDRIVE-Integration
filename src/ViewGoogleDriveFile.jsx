@@ -37,10 +37,6 @@ function ViewGoogleDriveFile({ file }) {
           });
       });
     });
-
-    const intervalId = setInterval(file.id, 1000);
-
-    return () => clearInterval(intervalId);
   }, [file]);
 
   return (

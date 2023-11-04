@@ -4,6 +4,10 @@ import ViewGoogleDriveFile from "./ViewGoogleDriveFile";
 
 function GoogleDriveFiles() {
   const [files, setFiles] = useState([]);
+  const [currentFolderId, setCurrentFolderId] = useState(
+    "1LEzEv-2AkACmTdFgmc8LQvAqRhITY3SQ"
+  );
+  const [previousFolderId, setPreviousFolderId] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
 
   useEffect(() => {
@@ -19,44 +23,81 @@ function GoogleDriveFiles() {
       });
 
       gapi.client.load("drive", "v3").then(() => {
-        gapi.client.drive.files
-          .list({
-            q: "'1LEzEv-2AkACmTdFgmc8LQvAqRhITY3SQ' in parents",
-          })
-          .then((response) => {
-            console.log(response);
-            setFiles(response.result.files);
-          });
+        // Fetch files in the initial folder (e.g., the root folder)
+        fetchFilesInFolder(currentFolderId);
       });
     });
   }, []);
 
+  const fetchFilesInFolder = (folderId) => {
+    gapi.client.drive.files
+      .list({
+        q: `'${folderId}' in parents`,
+      })
+      .then((response) => {
+        const folderFiles = response.result.files;
+        setFiles(folderFiles);
+      });
+  };
+
+  const navigateToFolder = (folderId) => {
+    setPreviousFolderId(previousFolderId.concat(currentFolderId));
+    setCurrentFolderId(folderId);
+    fetchFilesInFolder(folderId);
+  };
+
   const handleFileClick = (file) => {
     setSelectedFile(file);
   };
-
+  const navigateToBack = () => {
+    setPreviousFolderId(
+      previousFolderId.filter(
+        (item) => item !== previousFolderId[previousFolderId.length - 1]
+      )
+    );
+    setCurrentFolderId(previousFolderId[previousFolderId.length - 1]);
+    fetchFilesInFolder(previousFolderId[previousFolderId.length - 1]);
+  };
   return (
     <div>
       <h2>Files in Google Drive Folder</h2>
+      <button
+        onClick={(e) => {
+          e.preventDefault();
+          navigateToBack();
+        }}
+      >
+        back
+      </button>
       <ul>
         {files.map((file) => (
           <li key={file.id}>
-            <a
-              href={file.webContentLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => {
-                e.preventDefault(); // Prevent the link from navigating
-                handleFileClick(file);
-              }}
-            >
-              {file.name}
-            </a>
+            {file.mimeType === "application/vnd.google-apps.folder" ? (
+              <div
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigateToFolder(file.id);
+                }}
+                className="cursor"
+              >
+                {file.name}
+              </div>
+            ) : (
+              <div
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleFileClick(file);
+                }}
+                className="cursor"
+              >
+                {file.name}
+              </div>
+            )}
           </li>
         ))}
       </ul>
-
-      {selectedFile && <ViewGoogleDriveFile file={selectedFile} />}
+      {selectedFile && <ViewGoogleDriveFile file={selectedFile} />}{" "}
+      {/* Insert the ViewGoogleDriveFile component */}
     </div>
   );
 }
