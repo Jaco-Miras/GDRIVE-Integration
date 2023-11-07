@@ -18,7 +18,7 @@ const Image2 = () => {
 
       gapi.client.load("drive", "v3").then(() => {
         // fetchFilesInFolder(currentFolderId);
-        const fileId = "1scHAMW0Zqfpx5LVt_Yf1nQjJvbHKscZ9";
+        const fileId = "1sxJz1XcfVGAI2knT5TbfKeVGqoNHS5BW";
 
         // Use the files.get method with alt=media to download the file
         gapi.client.drive.files
