@@ -3,6 +3,9 @@ import { gapi } from "gapi-script";
 
 const Image2 = () => {
   const [test, setTest] = useState();
+  const [currentFolderId, setCurrentFolderId] = useState(
+    "1C2h2AtbMTksX3LjI07yYlu8rhIIribsr"
+  );
 
   useEffect(() => {
     gapi.load("client", () => {
@@ -18,37 +21,49 @@ const Image2 = () => {
 
       gapi.client.load("drive", "v3").then(() => {
         // fetchFilesInFolder(currentFolderId);
-        const fileId = "1sxJz1XcfVGAI2knT5TbfKeVGqoNHS5BW";
-
-        // Use the files.get method with alt=media to download the file
-        gapi.client.drive.files
-          .get({
-            fileId,
-            alt: "media",
-          })
-          .then((response) => {
-            // return response.arrayBuffer();
-            // Handle the image data (e.g., display it or save it)
-            console.log(response);
-            const imageContent = response.body;
-            console.log(imageContent);
-            // const file = new File([imageContent], "hi", {
-            //   type: "image/png",
-            // });
-            // console.log(file);
-
-            const blob = new Blob([imageContent], { type: "image/jpeg" }); // Update the 'type' accordingly based on your image format
-            const previewUrl = URL.createObjectURL(blob);
-            // const file = new File([blob], "hi", {
-            //   type: "image/png",
-            // });
-            console.log(previewUrl);
-            setTest(previewUrl);
-            // Handle the image content as needed
-          });
+        fetchFilesInFolder(currentFolderId);
       });
     });
   }, []);
+
+  const fetchFilesInFolder = (folderId) => {
+    gapi.client.drive.files
+      .list({
+        q: `'${folderId}' in parents`,
+      })
+      .then((response) => {
+        const folderFiles = response.result.files;
+        // setFiles(folderFiles);
+      });
+    const fileId = "1kDL9qyOH3dNnwGGG35-4WEeurnBSW0c9";
+
+    // Use the files.get method with alt=media to download the file
+    gapi.client.drive.files
+      .get({
+        fileId,
+        alt: "media",
+      })
+      .then(async (response) => {
+        // return response.arrayBuffer();
+        // Handle the image data (e.g., display it or save it)
+        console.log(response);
+        const imageContent = await response.arraybuffer();
+        console.log(imageContent);
+        // const file = new File([imageContent], "hi", {
+        //   type: "image/png",
+        // });
+        // console.log(file);
+
+        const blob = new Blob([imageContent], { type: "image/jpeg" }); // Update the 'type' accordingly based on your image format
+        const previewUrl = URL.createObjectURL(blob);
+        // const file = new File([blob], "hi", {
+        //   type: "image/png",
+        // });
+        console.log(previewUrl);
+        setTest(previewUrl);
+        // Handle the image content as needed
+      });
+  };
   return (
     <div>
       <img src={test} alt="" />
