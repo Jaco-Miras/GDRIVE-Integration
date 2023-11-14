@@ -5,7 +5,7 @@ const DropboxFolder = () => {
   const [contents, setContents] = useState([]);
   const [selectedFolder, setSelectedFolder] = useState("/Test Folder");
   const accessToken =
-    "sl.Bp32MQQ0hqO6qRS3cMSM_fbTA4zvaDc42vnz6nFOqnz3_EA4Ftph2TM64WZsCbDGprIon-Y2I1sCNLxBzuRFxJ6h4ZGm5-RcsICHxKSi1NubCQNjhBXqZ0R4NPDNInRqfuWX9cQ23OSRML4";
+    "sl.Bp257Qd176ShLmeaVX3yi556dh6AW1p4GJ80OlOaVkU_RLa2gByLKe5_w5P3m0GRtNEtrLdcO8I6U2e7yJAOvTY8F4pLkPtLiKQLgc8tN62j8mT-dIuGYaIsqL1zXDYW23b9u1nDlEMTNJU";
 
   const navigate = useNavigate();
 
